@@ -1,0 +1,155 @@
+#prac -1
+
+cd /home/analyst/lab.support.files/ 
+cat letter_to_grandma.txt
+openssl aes-256-cbc -in letter_to_grandma.txt  -out message.enc
+cat message.enc
+openssl aes-256-cbc -a -in letter_to_grandma.txt -out message.enc
+cat letter_to_grandma.txt
+openssl aes-256-cbc -a -d -in message.enc -out decrypted.txt
+
+Prac2
+
+sudo ./lab.support.files/scripts/configure_as_dhcp.sh
+ifconfig 
+ping www.google.com
+sudo ./lab.support.files/scripts/cyberops_extended_topo_no_fw.py
+xterm R1
+./lab.support.files/scripts/start_snort.sh
+xterm H5
+xterm H10
+./lab.support.files/scripts/mal_server_start.sh
+netstat -tunpa
+xterm R1 
+tail -f /var/log/snort/alert
+curl -O 209.165.202.133:6666/W32.Nimda.Amm.exe
+tcpdump –i H5-eth0 –w nimda.download.pcap&
+curl -O 209.165.202.133:6666/W32.Nimda.Amm.exe
+fgtcpdump -i H5-eth0 -w nimda.download.pcap
+xterm R1 
+iptables –L -v
+iptables -I FORWARD -p tcp -d 209.165.202.133 --dport 6666 -j DROP
+sudo mn –c
+
+Prac3
+cd ./lab.support.files/pcaps/ 
+ls -l
+wireshark-gtk nimda.download.pcap
+right click on TCP which shows top on the list. Then click on Follow TCP Stream. 
+HTTP>click file> select export obj > Select exe File >Save as > Select Folder> Save.
+ls -l 
+file W32.Nimda.Amm.exe
+
+Prac 4
+
+Open Wireshark and start a Wireshark capture by double clicking a network interface with traffic
+At the Command Prompt, enter ipconfig /flushdns clear the DNS cache.
+nslookup 
+name www.cisco.com
+exit in prompt it will exit the nslookup
+Standard query response 0x0002 A www.cisco.com.
+arp -a
+
+Prac5
+open ubuntu terminal
+sudosystemctl status rsyslog
+sudo apt-get update
+sudo apt-get install rsyslog
+sudo nano /etc/rsyslog.conf
+Uncomment above four lines that enable udp and tcp port binding:
+Add template right before GLOBAL DIRECTIVES section.
+$template remote-incoming-logs,"/var/log/%HOSTNAME%/%PROGRAMNAME%.log" 
+*.* ?remote-incoming-logs
+sudosystemctl restart rsyslog
+ss -tunelp | grep 514
+sudoufw allow 514/udp
+sudoufw allow 514/tcp
+sudorsyslogd -N1 -f /etc/rsyslog.conf
+
+Prac6
+deprndency on prac 5
+open kali linux
+sudo apt-get update
+sudo apt-get install rsyslog
+sudo nano /etc/rsyslog.conf
+Step 4:Add above lines at the end of the file
+@192.168.137.50:514
+*.* @@192.168.137.50:514
+Step 5:For the end add these following variables in case when the rsyslog server goes down.
+$ActionQueueFileName queue
+$ActionQueueMaxDiskSpace 1g
+$ActionQueueSaveOnShutdown on
+$ActionQueueType LinkedList
+$ActionResumeRetryCount -1
+
+sudosystemctl restart rsyslog
+
+open ubuntu terminal
+ls /var/log/
+sudo tail -f /var/log/kali/rsyslogd.log
+
+Prac7
+cd /tmp&&wgethttps://download.splunk.com/products/splunk/releases/7.1.1/linux/splunk-7.1.1-8f0ead9ec3db-linux-2.6-amd64.deb
+sudodpkg -i splunk-7.1.1-8f0ead9ec3db-linux-2.6-amd64.deb
+sudo service splunk start
+sudo service splunk status
+http://localhost:8000/
+
+Prac 8
+sudo apt update
+sudo apt install -y apt-transport-https openjdk-11-jre-headless uuid-runtime pwgen curl dirmngr
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add - 
+echo "deb https://artifacts.elastic.co/packages/oss-6.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-6.x.list
+sudo apt update
+sudo apt install -y elasticsearch-oss
+sudo nano /etc/elasticsearch/elasticsearch.yml
+Step 5: Set the cluster name as graylog, as shown below. Then, uncomment the line and below add this line.
+“action.auto_create_index: false” then save.
+Step 6: Start the Elasticsearch service to read the new      configurations.
+“sudosystemctl daemon-reload”
+“sudosystemctl start elasticsearch”
+“sudosystemctl enable elasticsearch”
+
+curl -X GET http://localhost:9200 
+sudo apt update
+sudo apt install -y mongodb-server
+sudosystemctl start mongodb
+sudosystemctl enable mongodb
+
+Prac 9
+wget https://packages.graylog2.org/repo/packages/graylog-3.3-repository_latest.deb
+sudodpkg -i graylog-3.3-repository_latest.deb
+sudodpkg -igraylog-server
+pwgen -N 1 -s 96
+sudogedit/etc/graylog/server/server.conf  edit the conf file and put
+Then, place the secret like below. 
+pasword_secret = generated key
+echo -n password | sha256sum
+sudo nano /etc/graylog/server/server.conf
+sudogedit /etc/graylog/server/server.conf
+Put http_bind_address = 192.168.0.10:9000
+http_external_uri = http://public_ip:9000/
+
+Place the below command 
+“sudosystemctl daemon-reload”
+“sudosystemctl start graylog-server”
+“sudosystemctl enable graylog-server”
+
+sudo tail -f /var/log/graylog-server/server.log
+http://ip.add.re.ss:9000
+
+Prac 10
+cd /home/analyst/lab.support.files
+ls –l
+awk 'BEGIN {FS=OFS="|"} {$3=strftime("%c",$3)} {print}' applicationX_in_epoch.log
+Step 4: Use nano (or your favorite text editor) to remove the extra empty line at the end of the file
+
+cat apache_in_epoch.log
+awk 'BEGIN {FS=OFS=" "} {$4=strftime("%c",$4)} {print}' apache_in_epoch.log
+
+
+
+
+
+
+
